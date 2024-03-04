@@ -8,14 +8,15 @@ interface PricingOracle {
     function getPrice(string memory asset) external view returns (uint256);
 }
 
+   
 contract TokenizedEconomyDevTools {
-    address public oracleAddress;
 
-    constructor(address _oracleAddress) {
-        oracleAddress = _oracleAddress;
+    constructor() {
+      // Add Functions
     }
 
-    function getPriceFromOracle(string memory asset) external view returns (uint256) {
+    // Function to fetch price from a specific oracle for a given asset
+    function getPriceFromOracle(address oracleAddress, string memory asset) external view returns (uint256) {
         PricingOracle oracle = PricingOracle(oracleAddress);
         return oracle.getPrice(asset);
     }
