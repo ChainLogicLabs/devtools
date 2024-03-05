@@ -20,26 +20,43 @@ TokenizedEconomyDevTools is a Solidity smart contract designed to securely conne
 4. **Using with Other Assets:**
    - Deploy a new instance of TokenizedEconomyDevTools for each asset.
    - Specify the address of the corresponding Pricing Oracle contract during deployment.
-   - Interact with each instance using the provided example code, replacing the asset symbol.
+   - Interact with each instance using the provided example code, replacing the asset symbol and contract address.
 
-### Example JavaScript Code:
+### Example Solidity Code:
 
-```javascript
-const web3 = new Web3('YOUR_WEB3_PROVIDER_URL');
-const accounts = await web3.eth.getAccounts();
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.0;
 
-// Deployed address of TokenizedEconomyDevTools contract
-const tokenizedEconomyDevToolsAddress = 'DEPLOYED_CONTRACT_ADDRESS';
+// Pricing Oracle Interface
+interface PricingOracle {
+    function getPrice(string memory asset) external view returns (uint256);
+}
 
-// Instantiate the contract
-const tokenizedEconomyDevTools = new web3.eth.Contract(TokenizedEconomyDevToolsABI, tokenizedEconomyDevToolsAddress);
+contract TokenizedEconomyDevTools {
+    address public owner;
 
-// Get the price of an asset from the Oracle
-const asset = 'ETH/USD'; // Replace with the actual asset for which you want the price
-const price = await tokenizedEconomyDevTools.methods.getPriceFromOracle(asset).call({ from: accounts[0] });
+    // Modifier to restrict access to the owner only
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
 
-console.log(`The price of ${asset} is: ${price}`);
-```
+    // Constructor sets the contract owner
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Function to fetch price from a specific oracle for a given asset
+    function getPriceFromOracle(address oracleAddress, string memory asset) external view returns (uint256) {
+        PricingOracle oracle = PricingOracle(oracleAddress);
+        return oracle.getPrice(asset);
+    }
+
+    // Function only accessible by the owner for demonstration purposes
+    function exampleFunction() external onlyOwner {
+        // Perform actions only the owner can do
+    }
+}
 
 ### Notes:
 
